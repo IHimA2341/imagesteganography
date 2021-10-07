@@ -27,16 +27,18 @@ def dec_to_binary(num: int, index: int) -> str:
 
 
 def binary_to_dec(binary: str) -> int:
-
+    # Returns the binary value of the number.
     return int(binary, 2)
 
 
 def modify_bit(n: int, p: int, b: int):
+    # Returns the binary with the modified bit.
     mask = 1 << p
     return (n & ~mask) | ((b << p) & mask)
 
 
 def get_code(path: str) -> str:
+    
     encoded_text = ""
     with Image.open(path) as image:
         width, height = image.size
@@ -44,6 +46,7 @@ def get_code(path: str) -> str:
             for y in range(0, height):
                 pixel = list(image.getpixel((x, y)))
                 for n in range(0, 3):
+                    # Gets the final bit of each pixel.
                     encoded_text += str(pixel[n] & 1)
     # Returns the string.
     return encoded_text
@@ -52,8 +55,10 @@ def get_code(path: str) -> str:
 def return_true_code(binary_list, delim: str) -> str:
     text = ""
     for item in binary_list:
+        # Gets each binary from the list and turns it into a character.
         text += chr(binary_to_dec(item))
         if text.__contains__(delim):
+            # Returns the text with the string in it, excluding the deliminator.
             return text[0:-len(delim)]
 
 
@@ -99,16 +104,19 @@ if __name__ == "__main__":
                     pixel = list(image.getpixel((x, y)))
                     for n in range(0, 3):
                         if(counter < len(binary_string)):
+                            # Modified the last bit in the pixel.
                             pixel[n] = modify_bit(pixel[n], 0, int(binary_string[counter]))
                             counter += 1
-
+                    # Changes the pixel in the image at the given coordinates.
                     image.putpixel((x, y), tuple(pixel))
             image.save("encoded_" + path, "PNG")
             image.show()
 
 
     elif choice == "decode":
-        
+        # Gets the encoded text + deliminator in binary form.
         encoded_text = get_code(path)
+        # Converts it all into 8 bits and puts it in a list
         binary_list = [encoded_text[i:i+8] for i in range(0, len(encoded_text), 8)]
+        # Prints out the text - deliminator
         print(return_true_code(binary_list, delim))
